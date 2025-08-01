@@ -104,7 +104,7 @@ Once the application is running, you can test its functionality:
 ## Diagrama de Fluxo da Aplicação
 Este diagrama mostra a sequência de ações do usuário e como os componentes da aplicação (React, Wagmi, MetaMask, Blockchain) interagem entre si.
 
-```
+```mermaid
 ---
 config:
   theme: default
@@ -144,3 +144,10 @@ flowchart TD
     Hook_Wait -- "Monitora Tx na Blockchain" --> Contract
     Contract -- "Transação Confirmada" --> Hook_Read
 ```
+
+### 💡 O que o Diagrama Explica:
+Fluxo de Conexão (Parte de Cima): O usuário clica para conectar, o que aciona o hook useConnect. Este hook "conversa" com a MetaMask, que pede a permissão do usuário. Uma vez conectado, o hook useContractRead é ativado automaticamente.
+
+Fluxo de Leitura (Meio): O useContractRead chama a função greet() (que é gratuita e só para leitura) no nosso contrato inteligente na rede Sepolia. O contrato retorna a saudação atual, que é então exibida na interface.
+
+Fluxo de Escrita (Parte de Baixo): Quando o usuário envia uma nova saudação, o hook useContractWrite é acionado. Ele pede para a MetaMask assinar uma transação (o que custa gás de teste). Após a aprovação, o hook useWaitForTransaction fica monitorando a blockchain até que a transação seja confirmada. Assim que é confirmada, o useContractRead é acionado novamente para buscar e exibir a nova saudação, completando o ciclo.
