@@ -22,7 +22,6 @@ A fundamental boilerplate for a decentralized application (dApp) built with Reac
 [React_Query-shield]: https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white
 [React_Query-url]: https://tanstack.com/query/latest
 
------
 
 ## About The Project
 
@@ -35,7 +34,6 @@ This project serves as a starting point for building more complex dApps. It prov
       * **Write**: Allows the user to send a transaction to update the greeting message on the blockchain.
   * **Modern Tech Stack**: Built with Vite for a fast development experience, React for the UI, and the powerful wagmi/Viem combination for state management and blockchain communication.
 
------
 
 ## Built With
 
@@ -47,7 +45,6 @@ This project was built using the latest standards for Web3 front-end development
   * [wagmi](https://wagmi.sh/)
   * [Viem](https://viem.sh/)
 
------
 
 ## Getting Started
 
@@ -101,8 +98,9 @@ Once the application is running, you can test its functionality:
 5.  **Wait for Confirmation**: The UI will show a "waiting" status. Once the transaction is mined, the new greeting will automatically appear on the screen.
 
 
-## Diagrama de Fluxo da Aplicação
-Este diagrama mostra a sequência de ações do usuário e como os componentes da aplicação (React, Wagmi, MetaMask, Blockchain) interagem entre si.
+### Application Flowchart
+
+This diagram shows the sequence of user actions and how the application components (React, Wagmi, MetaMask, Blockchain) interact with each other.
 
 ```mermaid
 ---
@@ -111,43 +109,42 @@ config:
   look: handDrawn
 ---
 flowchart TD
-    subgraph "💻 Frontend (Sua dApp em React)"
-        User["👤 Usuário"]
-        UI_Connect["🔘 Botão 'Conectar'"]
-        UI_Read["📜 Exibição da Saudação"]
-        UI_Write["📝 Formulário 'Alterar Saudação'"]
+    subgraph "💻 Frontend (Your dApp in React)"
+        User["👤 User"]
+        UI_Connect["🔘 'Connect' Button"]
+        UI_Read["📜 Greeting Display"]
+        UI_Write["📝 'Change Greeting' Form"]
         Hook_Connect["⚛️ hook: useConnect"]
         Hook_Read["⚛️ hook: useContractRead"]
         Hook_Write["⚛️ hook: useContractWrite"]
-        Hook_Wait["⚛️ hook: useWaitForTransaction"]
+        Hook_Wait["⚛️ hook: useWaitForTransactionReceipt"]
     end
 
-    subgraph "🦊 Carteira & Blockchain"
+    subgraph "🦊 Wallet & Blockchain"
         Wallet["MetaMask (Browser)"]
-        Contract["📜 Smart Contract 'Greeter' (Sepolia)"]
+        Contract["📜 'Greeter' Smart Contract (Sepolia)"]
     end
 
-    %% Fluxo de Conexão e Leitura Inicial
-    User -- Clica --> UI_Connect
-    UI_Connect -- Dispara --> Hook_Connect
-    Hook_Connect -- Pede permissão --> Wallet
-    Wallet -- Conexão Aprovada --> Hook_Read
-    Hook_Read -- "Lê função greet()" --> Contract
-    Contract -- Retorna saudação --> UI_Read
-    UI_Read -- Mostra para --> User
+    %% Connection & Initial Read Flow
+    User -- Clicks --> UI_Connect
+    UI_Connect -- Triggers --> Hook_Connect
+    Hook_Connect -- Asks for permission --> Wallet
+    Wallet -- Connection Approved --> Hook_Read
+    Hook_Read -- "Reads greet() function" --> Contract
+    Contract -- Returns greeting --> UI_Read
+    UI_Read -- Displays to --> User
 
-    %% Fluxo de Escrita
-    User -- Digita e envia --> UI_Write
-    UI_Write -- Dispara com novo texto --> Hook_Write
-    Hook_Write -- "Pede para assinar transação setGreeting()" --> Wallet
-    Wallet -- Transação Aprovada --> Hook_Wait
-    Hook_Wait -- "Monitora Tx na Blockchain" --> Contract
-    Contract -- "Transação Confirmada" --> Hook_Read
+    %% Write Flow
+    User -- Types and submits --> UI_Write
+    UI_Write -- Triggers with new text --> Hook_Write
+    Hook_Write -- "Asks to sign setGreeting() transaction" --> Wallet
+    Wallet -- Transaction Approved --> Hook_Wait
+    Hook_Wait -- "Monitors Tx on Blockchain" --> Contract
+    Contract -- "Transaction Confirmed" --> Hook_Read
 ```
 
-### 💡 O que o Diagrama Explica:
-Fluxo de Conexão (Parte de Cima): O usuário clica para conectar, o que aciona o hook useConnect. Este hook "conversa" com a MetaMask, que pede a permissão do usuário. Uma vez conectado, o hook useContractRead é ativado automaticamente.
+### 💡 What the Diagram Explains:
 
-Fluxo de Leitura (Meio): O useContractRead chama a função greet() (que é gratuita e só para leitura) no nosso contrato inteligente na rede Sepolia. O contrato retorna a saudação atual, que é então exibida na interface.
-
-Fluxo de Escrita (Parte de Baixo): Quando o usuário envia uma nova saudação, o hook useContractWrite é acionado. Ele pede para a MetaMask assinar uma transação (o que custa gás de teste). Após a aprovação, o hook useWaitForTransaction fica monitorando a blockchain até que a transação seja confirmada. Assim que é confirmada, o useContractRead é acionado novamente para buscar e exibir a nova saudação, completando o ciclo.
+1.  **Connection Flow:** The user clicks to connect, which triggers the `useConnect` hook. This hook "talks" to MetaMask, which asks for the user's permission. Once connected, `useContractRead` is automatically activated.
+2.  **Read Flow:** `useContractRead` calls the `greet()` function (which is free and read-only) on our smart contract on the Sepolia network. The contract returns the current greeting, which is then displayed in the interface.
+3.  **Write Flow:** When the user submits a new greeting, the `useContractWrite` hook is triggered. It asks MetaMask to **sign a transaction** (which costs testnet gas). After approval, the `useWaitForTransactionReceipt` hook monitors the blockchain until the transaction is confirmed. Once confirmed, `useContractRead` is re-triggered to fetch and display the new greeting, completing the cycle.
