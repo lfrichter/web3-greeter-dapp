@@ -72,11 +72,11 @@ Make sure you have the following installed before you begin:
 
 1.  **Clone the repository**
     ```sh
-    git clone https://github.com/your-username/your-repo-name.git
+    git clone https://github.com/lfrichter/web3-greeter-dapp.git
     ```
 2.  **Navigate to the project directory**
     ```sh
-    cd your-repo-name
+    cd web3-greeter-dapp
     ```
 3.  **Install NPM packages**
     ```sh
@@ -99,3 +99,48 @@ Once the application is running, you can test its functionality:
 3.  **Write to the Contract**: Type a new message in the input field and click the `Alterar Saudação` (Change Greeting) button.
 4.  **Confirm Transaction**: MetaMask will pop up again, asking you to confirm the transaction and approve the gas fee.
 5.  **Wait for Confirmation**: The UI will show a "waiting" status. Once the transaction is mined, the new greeting will automatically appear on the screen.
+
+
+## Diagrama de Fluxo da Aplicação
+Este diagrama mostra a sequência de ações do usuário e como os componentes da aplicação (React, Wagmi, MetaMask, Blockchain) interagem entre si.
+
+```
+---
+config:
+  theme: default
+  look: handDrawn
+---
+flowchart TD
+    subgraph "💻 Frontend (Sua dApp em React)"
+        User["👤 Usuário"]
+        UI_Connect["🔘 Botão 'Conectar'"]
+        UI_Read["📜 Exibição da Saudação"]
+        UI_Write["📝 Formulário 'Alterar Saudação'"]
+        Hook_Connect["⚛️ hook: useConnect"]
+        Hook_Read["⚛️ hook: useContractRead"]
+        Hook_Write["⚛️ hook: useContractWrite"]
+        Hook_Wait["⚛️ hook: useWaitForTransaction"]
+    end
+
+    subgraph "🦊 Carteira & Blockchain"
+        Wallet["MetaMask (Browser)"]
+        Contract["📜 Smart Contract 'Greeter' (Sepolia)"]
+    end
+
+    %% Fluxo de Conexão e Leitura Inicial
+    User -- Clica --> UI_Connect
+    UI_Connect -- Dispara --> Hook_Connect
+    Hook_Connect -- Pede permissão --> Wallet
+    Wallet -- Conexão Aprovada --> Hook_Read
+    Hook_Read -- "Lê função greet()" --> Contract
+    Contract -- Retorna saudação --> UI_Read
+    UI_Read -- Mostra para --> User
+
+    %% Fluxo de Escrita
+    User -- Digita e envia --> UI_Write
+    UI_Write -- Dispara com novo texto --> Hook_Write
+    Hook_Write -- "Pede para assinar transação setGreeting()" --> Wallet
+    Wallet -- Transação Aprovada --> Hook_Wait
+    Hook_Wait -- "Monitora Tx na Blockchain" --> Contract
+    Contract -- "Transação Confirmada" --> Hook_Read
+```
